@@ -4,7 +4,7 @@
 - The motivation of creating this meme was to make something that other university students could relate to. 
 - It is an adaptation of one of the most popular meme formats in internet history with a small *twist* on the structure to further emphesise each 'stage' of the meme.
 
-Here is a meme I create using the R package [{magick}](https://cran.r-project.org/web/packages/magick/vignettes/intro.html).
+Here is a meme I created using the R package [{magick}](https://cran.r-project.org/web/packages/magick/vignettes/intro.html).
 ![](my_meme.png)
 
 **NOTE**: 
