@@ -13,6 +13,7 @@ Here is a meme I created using the R package [{magick}](https://cran.r-project.o
 2. The second image black square was scaled to be smaller than the others to show the slight increase in knowledge. 
 3. The third image used a "bad" crop to show progress in learning. 
 4. The fourth image used a "correct" crop using offset to show mastery of the function. 
+
 Hopefully this lil' metaphor is not too confusing!
 
 ## CODE to create the meme:
