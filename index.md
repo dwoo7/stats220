@@ -16,7 +16,7 @@ Here is a meme I created using the R package [{magick}](https://cran.r-project.o
 
 Hopefully this lil' metaphor is not too confusing!
 
-## CODE to create the meme:
+## CODE to create and save the meme:
 
 ```r
 # Accessing the "magick" package
@@ -99,8 +99,8 @@ fourth_row <- c(sunglasses_smart_patrick, smart_text) %>%
 meme <- c(first_row, second_row, third_row, fourth_row) %>%
   image_append(stack = TRUE)
 
-# Saving the meme as a png file
-image_write(meme, "my_meme.png")
+# Saving the meme as a png file within a subfile
+image_write(meme, "savedFiles/my_meme.png")
 ```
 
 **That's the end of the code!**
