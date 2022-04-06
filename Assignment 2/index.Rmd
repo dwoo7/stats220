@@ -1,0 +1,166 @@
+---
+title: "Assignment 2"
+subtitle: "STATS 220 Semester One 2022"
+author: "Daniel Woo"
+date: "31/03/2022"
+output: html_document
+---
+
+```{css, include=TRUE, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Merriweather:wght@300&display=swap');
+
+# Changing the fonts and colours of the headings and body of the html
+h1 {font-family: 'Josefin Sans', sans-serif;
+    background-color: #ebf7ad}
+h2 {font-family: 'Josefin Sans', sans-serif;
+    background-color: #ebf7ad}
+body {font-family: 'Merriweather', serif; 
+      background-color: #EDF0CE}
+
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, fig.width = 6, fig.height = 4, message = FALSE, warning = FALSE, error = FALSE)
+
+# Loading the tidyverse package
+library(tidyverse)
+```
+
+## Introduction
+
+For this report, I decided to explore what the most common devices used to listen to music were, the most popular genres and how often people update their music libraries. These were shown using stacked bar graphs, colour-coded using the most common devices to observe the individual results and their combined results. Relationships between variables were also explored. I wanted to see if there were any trends between the hours of music listened to per day and the frequency of music library updates. The relationship between the device type and number of hours listened to per day was also explored. Both of these relationships were visualised using side-by-side boxplots. All data used was collected through a Google Form which was converted to a CSV File.
+
+## Links to form and data
+
+Link to the Google Form:
+<https://docs.google.com/forms/d/1ChJBYHdQ4o8tg4r5vFskwdw-O7rqhAIMIXLsPxQazRQ/edit>
+
+URL for the CSV File:
+<https://docs.google.com/spreadsheets/d/e/2PACX-1vRlzz9oN35sraPStWz-rmNIeJhREDt3vEMNAShCPm3WH3ucKNPbtG2luKyF_qSaqFJ011ItXDlFgrVo/pub?gid=1587540473&single=true&output=csv>
+
+## Analytics
+
+The table below shows the first five rows from the data I collected from people who filled out my Google Form.
+
+```{r data-import}
+
+# Link to the CSV File
+csv_file <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlzz9oN35sraPStWz-rmNIeJhREDt3vEMNAShCPm3WH3ucKNPbtG2luKyF_qSaqFJ011ItXDlFgrVo/pub?gid=1587540473&single=true&output=csv"
+
+# Reading the CSV File and renaming the variables/columns
+music_data <- read_csv(csv_file) %>%
+  rename(music_hours = 2,
+         device_hours = 3,
+         songs_library = 4,
+         device_common = 5,
+         library_update = 6,
+         fav_genre = 7,
+         types_genre = 8,
+         music_sources = 9
+         ) %>%
+  select(music_hours, device_hours, songs_library, device_common, library_update, fav_genre, types_genre, music_sources)
+
+# Slicing the data to get the first five rows and printing the data
+music_data %>%
+  slice(1 : 5) %>%
+  knitr::kable()
+```
+
+In total, `r nrow(music_data)` students completed my form (one person's answers were removed as it was not a sensible answer; ie. listening to music for more than 24 hours a day).
+
+First, I wanted to observe which device was most commonly used to listen to music.
+
+```{r fig.width = 6, fig.height = 4}
+
+# Plotting a bar graph of the most common device used to listen to music and the number of people who chose the options
+music_data %>%
+  ggplot() +
+  geom_bar(aes(x = device_common, fill = device_common)) +
+  scale_y_continuous(breaks = c(seq(1, 25, 2))) +
+  labs(title = "Primary device for music",
+       caption = "Source: Google Forms",
+       x = "Device Type",
+       y = "Number of people")
+```
+
+The most common device used to listen to music seemed to be `r max(music_data$device_common)`, with 22 people choosing this option. This was followed by `r min(music_data$device_common)` with 7 people choosing this option. These were the two primary devices used to listen to music.
+
+Next, I was curious to find which genre of music was the most popular within my sample of data. I wanted to see if the results were similar for phone users and PC / Laptop users.
+
+```{r fig.width = 10, fig.height = 4}
+
+# Plotting a bar graph of the people's favourite genres of music and the number of people who chose the options
+music_data %>%
+  ggplot() +
+  geom_bar(aes(x = fav_genre, fill = device_common)) +
+  scale_y_continuous(breaks = c(1:10)) +
+  labs(title = "Favouite Genres",
+       subtitle = "Comparing people's favourite genres",
+       caption = "Source: Google Forms",
+       x = "Genre",
+       y = "Number of people")
+
+```
+
+The most popular genre was `r tail(names(sort(table(music_data$fav_genre))), 1)`, with 9 people choosing this option. The least popular was a three-way tie between `r tail(names(sort(table(music_data$fav_genre),  decreasing = TRUE)), 3)` with only a single person each choosing these options. It seems that PC / Laptop users preferred to listen to lofi, pop, R&B and religious music. A future study observing the affects of studying while listening to music, device choice and these genre choices could be explored as the favoured genres of PC / Laptop users are typically less distracting or 'intense' than options favoured by phone users.
+
+I also wanted to see how often people updated their music libraries and playlists.
+
+```{r fig.width = 10, fig.height = 4}
+
+# Plotting a bar graph of the library update frequencies and the number of people who chose the options
+music_data %>%
+  ggplot() +
+  geom_bar(aes(x = library_update, fill = device_common)) +
+  scale_y_continuous(breaks = c(1:15)) +
+  labs(title = "Comparing how often people update their music libraries",
+       caption = "Source: Google Forms",
+       x = "Library update frequency",
+       y = "Number of people")
+```
+
+The most common library/playlist update frequency was `r tail(names(sort(table(music_data$library_update))), 1)`.
+This was true for both PC / Laptop and Phone users as seen in the graph.
+
+I was also interested in observing the relationships between variables to see if there are any correlations between certain variables.
+
+The first relationship I wanted to explore is the number of hours of music listened to per day and the frequency of updating libraries/playlists. This was observed using side-by-side boxplots.
+
+```{r fig.width = 10, fig.height = 4}
+
+# Plotting a side-by-side boxplot showing the relationship between the frequency of library updates and number of hours of music listened to per day
+music_data %>%
+  ggplot() +
+  geom_boxplot(aes(x = library_update, y = music_hours, fill = library_update)) +
+  labs(title = "Relationship between the frequency of library updates and number of hours of music listened to per day",
+       caption = "Source: Google Forms",
+       x = "Library update frequency",
+       y = "Hours of music per day")
+```
+
+The boxplot of `r tail(names(sort(table(music_data$library_update))), 1)` had the highest median of the five, approximately 3 hours, and also had the highest maximum value. It also had the lowest lower quartile value, along with `r tail(names(sort(table(music_data$library_update), decreasing = TRUE)), 1)`. However, it also had the highest upper quartile value. A future study with a larger sample size may change these results.
+
+The second relationship I wanted to explore is the number of hours of music listened to per day and the primary device used to listen to music. This was also observed using side-by-side boxplots.
+
+```{r fig.width = 10, fig.height = 4}
+
+# Plotting a side-by-side boxplot showing the relationship between primary device types and number of hours of music listened to per day
+music_data %>%
+  ggplot() +
+  geom_boxplot(aes(x = device_common, y = music_hours, fill = device_common)) +
+  labs(title = "Relationship between primary device types and number of hours of music listened to per day",
+       caption = "Source: Google Forms",
+       x = "Device Type",
+       y = "Hours of music per day")
+```
+
+People who use `r tail(names(sort(table(music_data$device_common))), 1)` as their primary device had a higher median, upper quartile, lower quartile and minimum values than than those who used their Phone. Phone users had a higher maximum value of 8 hours, however this was considered an outlier, therefore PC / Laptop users had a higher maximum value on the boxplots. The PC / Laptop users had an approximate median of 3 and phone users had an approximate median of 2.
+
+## Learning reflection
+
+Module 2 Creating dynamic reporting systems had several key ideas that helped me with my understanding. Plotting data is an idea I thought was very important as I am aiming to work in data analysis. Being able to visualise data using code is the very start of analysis. Through graphs, trends can be observed and information such as maximum and minimum values, medians and means can be collected. The options for inline code we learnt such as nrow() also helps us collect data such as the number of rows in a table, making it easier to get this information without manually searching and entering this value. If the table is expanded, the code updates the value, making it more automatic and thus reducing workload. 
+
+Using the techniques learnt from Assignment 1, I changed the look of this Rmarkdown file using CSS. I changed the fonts and the colours of the headings and body paragraphs. R chunks were used to develop R code and there were changes the knitr::opts_chunk$set() settings to produce the correct outputs I wanted. Comments were also used to make sure the code is easier to understand.
+
+I am looking forward to exploring more parts of data technology related to this assignment such as plotting graphs to show relationships between several variables (numeric-numeric, numeric-categorical, categorical-categorical) and finding key values within these plots. I struggled with using inline code to find values such as medians when faced with categorical plots so I think it would be very beneficial to learn more advanced functions and methods that can help me with extracting data from plots and tables. Also mentioned in the previous assignment, I would like to continue to explore interactive and animated plots. A teaching assistant mentioned <https://r-graph-gallery.com/>, a website that focuses on tidyverse and ggplot2 to show different plots, including interactive and animated plots. They have courses that aid in developing skills which would be a good start for the direction I want to go in.
